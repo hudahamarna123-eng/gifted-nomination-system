@@ -1,15 +1,15 @@
 // دالة خادم لتخزين واسترجاع سجل التقييمات، مشتركاً بين كل المعلمين.
 // تستخدم Upstash Redis (تكامل مجاني متوفر مباشرة من متجر تكاملات Vercel).
-// عند إضافة تكامل Upstash Redis من لوحة Vercel، يتم ضبط UPSTASH_REDIS_REST_URL
-// و UPSTASH_REDIS_REST_TOKEN تلقائياً كمتغيّرات بيئة - لا حاجة لإدخالهما يدوياً.
 
 import { Redis } from '@upstash/redis';
 
 const REPORTS_KEY = 'gifted_assessments';
 
 export default async function handler(req, res) {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // تكامل Upstash الحديث عبر Vercel يستخدم أسماء KV_REST_API_*
+  // بينما بعض الإعدادات القديمة تستخدم UPSTASH_REDIS_REST_* - ندعم الاثنين
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
   if (!url || !token) {
     return res.status(500).json({
@@ -41,4 +41,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ message: error.message || 'خطأ غير متوقع في قاعدة البيانات' });
   }
 }
-
